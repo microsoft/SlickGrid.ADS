@@ -1,5 +1,5 @@
 {
-  "name": "@microsoft/slickgrid.ADS",
+  "name": "slickgrid",
   "version": "2.3.34",
   "description": "A lightning fast JavaScript grid/spreadsheet modified for use in Azure Data Studio",
   "main": "slick.core.js",
