@@ -1,7 +1,7 @@
 {
-  "name": "slickgrid",
-  "version": "2.3.33",
-  "description": "A lightning fast JavaScript grid/spreadsheet",
+  "name": "@microsoft/slickgrid.ADS",
+  "version": "2.3.34",
+  "description": "A lightning fast JavaScript grid/spreadsheet modified for use in Azure Data Studio",
   "main": "slick.core.js",
   "directories": {
     "example": "examples",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/6pac/SlickGrid.git"
+    "url": "git+https://github.com/microsoft/SlickGrid.ADS.git"
   },
   "keywords": [
     "slickgrid",
@@ -17,13 +17,14 @@
   ],
   "author": "Michael Leibman <michael.leibman@gmail.com>",
   "contributors": [
-    "Ben McIntyre <email.ben.mcintyre@gmail.com>"
+    "Ben McIntyre <email.ben.mcintyre@gmail.com>",
+    "Microsoft"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/6pac/SlickGrid/issues"
+    "url": "https://github.com/microsoft/SlickGrid.ADS/issues"
   },
-  "homepage": "https://github.com/6pac/SlickGrid#readme",
+  "homepage": "https://github.com/microsoft/SlickGrid.ADS#readme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
