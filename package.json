@@ -1,6 +1,6 @@
 {
   "name": "slickgrid",
-  "version": "2.3.34",
+  "version": "2.3.35",
   "description": "A lightning fast JavaScript grid/spreadsheet modified for use in Azure Data Studio",
   "main": "slick.core.js",
   "directories": {
