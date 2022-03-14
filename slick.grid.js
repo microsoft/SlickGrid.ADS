@@ -3706,7 +3706,6 @@ if (typeof Slick === "undefined") {
         activePosX = pos.posX;
         return true;
       } else {
-        setActiveCellInternal(getCellNode(activeRow, activeCell));
         return false;
       }
     }
