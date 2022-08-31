@@ -278,7 +278,6 @@ if (typeof Slick === "undefined") {
       if (!/relative|absolute|fixed/.test($container.css("position"))) {
         $container.css("position", "relative");
       }
-      $focusAnchor = $("<div tabIndex='0' hideFocus style='position:fixed;width:0;height:0;top:0;left:0;outline:0;'></div>").appendTo($container);
       if (options.createPreHeaderPanel) {
         $preHeaderPanelScroller = $("<div class='slick-preheader-panel ui-state-default' style='overflow:hidden;position:relative;' />").appendTo($container);
         $preHeaderPanel = $("<div />").appendTo($preHeaderPanelScroller);
@@ -310,6 +309,9 @@ if (typeof Slick === "undefined") {
       }
 
       $viewport = $("<div role='presentation' class='slick-viewport' style='width:100%;overflow:auto;outline:0;position:relative;;'>").appendTo($container);
+
+      $focusAnchor = $("<div tabIndex='0' hideFocus style='position:fixed;width:0;height:0;top:0;left:0;outline:0;'></div>").appendTo($viewport);
+
       $viewport.css("overflow-y", options.alwaysShowVerticalScroll ? "scroll" : (options.autoHeight ? "hidden" : "auto"));
       $viewport.css("overflow-x", options.forceFitColumns ? "hidden" : "auto");
       if (options.viewportClass) $viewport.toggleClass(options.viewportClass, true);
@@ -379,7 +381,7 @@ if (typeof Slick === "undefined") {
             //.on("click", handleClick)
             .on("scroll", handleScroll);
         $headerScroller
-            //.on("scroll", handleHeaderScroll)
+            .on("scroll", handleHeaderScroll)
             .on("contextmenu", handleHeaderContextMenu)
             .on("click", handleHeaderClick)
             .on("mouseenter", ".slick-header-column", handleHeaderMouseEnter)
@@ -2755,8 +2757,6 @@ if (typeof Slick === "undefined") {
             handled = navigateUp();
           } else if (e.which == keyCode.DOWN) {
             handled = navigateDown();
-          } else if (e.which == keyCode.TAB) {
-            handled = navigateNext();
           } else if (e.which == keyCode.ENTER) {
             if (options.editable) {
               if (currentEditor) {
@@ -2774,8 +2774,6 @@ if (typeof Slick === "undefined") {
             }
             handled = true;
           }
-        } else if (e.which == keyCode.TAB && e.shiftKey && !e.ctrlKey && !e.altKey) {
-          handled = navigatePrev();
         }
       }
 
