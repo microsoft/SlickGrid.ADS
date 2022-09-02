@@ -383,7 +383,8 @@ if (typeof Slick === "undefined") {
             .on("contextmenu", handleHeaderContextMenu)
             .on("click", handleHeaderClick)
             .on("mouseenter", ".slick-header-column", handleHeaderMouseEnter)
-            .on("mouseleave", ".slick-header-column", handleHeaderMouseLeave);
+            .on("mouseleave", ".slick-header-column", handleHeaderMouseLeave)
+            .on("keydown", handleHeaderKeyDown);
         $headerRowScroller
             .on("scroll", handleHeaderRowScroll);
 
@@ -881,7 +882,6 @@ if (typeof Slick === "undefined") {
               }
 
               setSortColumns(sortColumns);
-
               if (!options.multiColumnSort) {
                 trigger(self.onSort, {
                   multiColumnSort: false,
@@ -2873,7 +2873,29 @@ if (typeof Slick === "undefined") {
       var $header = $(e.target).closest(".slick-header-column", ".slick-header-columns");
       var column = $header && $header.data("column");
       if (column) {
+        focusOnColumnHeader(getColumnIndex(column.id));
         trigger(self.onHeaderClick, {column: column, grid: self}, e);
+      }
+    }
+
+    function handleHeaderKeyDown(e) {
+      var keyCode = Slick.keyCode;
+
+      if (e.which == keyCode.LEFT) {
+        handled = navigateLeft();
+      } else if (e.which == keyCode.RIGHT) {
+        handled = navigateRight();
+      } else if (e.which == keyCode.UP) {
+        handled = navigateUp();
+      } else if (e.which == keyCode.DOWN) {
+        handled = navigateDown();
+      } else if (e.which == keyCode.TAB) {
+        handled = navigateNext();
+      } else if (e.which == keyCode.ENTER) {
+      }
+      if(handled){
+        e.stopPropagation();
+        e.preventDefault();
       }
     }
 
@@ -3430,6 +3452,14 @@ if (typeof Slick === "undefined") {
     }
 
     function gotoRight(row, cell, posX) {
+      if(isActiveCellAColumnHeader()){
+        if(activeCell + 1 >= columns.length){
+        } else {
+          focusOnColumnHeader(cell + 1);
+        }
+        return;
+      }
+
       if (cell >= columns.length) {
         return null;
       }
@@ -3450,6 +3480,15 @@ if (typeof Slick === "undefined") {
     }
 
     function gotoLeft(row, cell, posX) {
+      if(isActiveCellAColumnHeader()){
+        if(activeCell - 1 < 0 ){
+          return;
+        } else {
+          focusOnColumnHeader(cell - 1);
+        }
+        return;
+      }
+
       if (cell <= 0) {
         return null;
       }
@@ -3901,23 +3940,32 @@ if (typeof Slick === "undefined") {
     }
 
     function focusOnColumnHeader(cell) {
-      resetActiveCell();
+      if(isActiveCellAColumnHeader()){
+        if(activeCellNode){
+          activeCellNode.tabIndex = -1;
+          activeCellNode = undefined;
+        }
+      } else {
+        resetActiveCell();
+      }
       const columnHeaderDiv = $headerScroller.find(`div [id="${uid + columns[cell].id}"]`);
       const focusableElement = columnHeaderDiv.find('[tabindex="-1"]');
-      console.log(columnHeaderDiv, focusableElement);
+      activeCell = cell;
+      activeRow = -1;
       if(focusableElement.length !== 0){
         focusableElement.focus();
         focusableElement.attr('tabindex', '0');
-        activeCellNode = focusableElement;
+        activeCellNode = focusableElement[0];
       } else {
         columnHeaderDiv.focus();
         columnHeaderDiv.attr('tabindex', '0');
-        activeCellNode = columnHeaderDiv;
+        activeCellNode = columnHeaderDiv[0];
       }
     }
 
-    function isHeader
-
+    function isActiveCellAColumnHeader() {
+      return $headerScroller[0].contains(activeCellNode);
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Debug
