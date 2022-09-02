@@ -379,7 +379,7 @@ if (typeof Slick === "undefined") {
             //.on("click", handleClick)
             .on("scroll", handleScroll);
         $headerScroller
-            //.on("scroll", handleHeaderScroll)
+            .on("scroll", handleHeaderScroll)
             .on("contextmenu", handleHeaderContextMenu)
             .on("click", handleHeaderClick)
             .on("mouseenter", ".slick-header-column", handleHeaderMouseEnter)
@@ -424,16 +424,7 @@ if (typeof Slick === "undefined") {
       }
       let cellToFocus = getActiveCell();
       if (!cellToFocus) {
-        for (let col = 0; col < columns.length; col++) {
-          // some cells are not keyboard focusable (e.g. row number column), we need to find the first focusable cell.
-          if (canCellBeActive(0, col)) {
-            cellToFocus = {
-              row: 0,
-              cell: col
-            };
-            break;
-          }
-        }
+        focusOnColumnHeader(0);
       }
       if(cellToFocus) {
         setActiveCell(cellToFocus.row, cellToFocus.cell);
@@ -756,7 +747,7 @@ if (typeof Slick === "undefined") {
       for (var i = 0; i < columns.length; i++) {
         var m = columns[i];
 
-        var header = $("<div role='columnheader' class='ui-state-default slick-header-column' />")
+        var header = $("<div role='columnheader' class='ui-state-default slick-header-column' tabindex='-1'/>")
             .html("<span class='slick-column-name'>" + m.name + "</span>")
             .width(m.width - headerColumnWidthDiff)
             .attr("id", "" + uid + m.id)
@@ -970,7 +961,7 @@ if (typeof Slick === "undefined") {
           return;
         }
         $col = $(e);
-        $("<div role='presentation' class='slick-resizable-handle' />")
+        $("<div role='presentation' class='slick-resizable-handle'/>")
             .appendTo(e)
             .on("dragstart", function (e, dd) {
               if (!getEditorLock().commitCurrentEdit()) {
@@ -3514,6 +3505,7 @@ if (typeof Slick === "undefined") {
       var prevCell;
       while (true) {
         if (--row < 0) {
+          focusOnColumnHeader(cell);
           return null;
         }
 
@@ -3906,6 +3898,22 @@ if (typeof Slick === "undefined") {
         throw new Error("Selection model is not set");
       }
       selectionModel.setSelectedRanges(rowsToRanges(rows));
+    }
+
+    function focusOnColumnHeader(cell) {
+      resetActiveCell();
+      const columnHeaderDiv = $headerScroller.find(`div [id="${uid + columns[cell].id}"]`);
+      const focusableElement = columnHeaderDiv.find('[tabindex="-1"]');
+      console.log(columnHeaderDiv, focusableElement);
+      if(focusableElement.length !== 0){
+        focusableElement.focus();
+        focusableElement.attr('tabindex', '0');
+        activeCellNode = focusableElement;
+      } else {
+        columnHeaderDiv.focus();
+        columnHeaderDiv.attr('tabindex', '0');
+        activeCellNode = columnHeaderDiv;
+      }
     }
 
 
