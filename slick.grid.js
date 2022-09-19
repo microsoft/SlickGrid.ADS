@@ -379,7 +379,7 @@ if (typeof Slick === "undefined") {
             .on("resize.slickgrid", resizeCanvas);
         $viewport
             //.on("click", handleClick)
-            .on("scroll", handleScroll);
+            //.on("scroll", handleScroll);
         $headerScroller
             .on("scroll", handleHeaderScroll)
             .on("contextmenu", handleHeaderContextMenu)
@@ -2757,6 +2757,8 @@ if (typeof Slick === "undefined") {
             handled = navigateUp();
           } else if (e.which == keyCode.DOWN) {
             handled = navigateDown();
+          } else if (e.which == keyCode.TAB) {
+            handled = navigateNext();
           } else if (e.which == keyCode.ENTER) {
             if (options.editable) {
               if (currentEditor) {
@@ -2774,6 +2776,8 @@ if (typeof Slick === "undefined") {
             }
             handled = true;
           }
+        } else if (e.which == keyCode.TAB && e.shiftKey && !e.ctrlKey && !e.altKey) {
+          handled = navigatePrev();
         }
       }
 
