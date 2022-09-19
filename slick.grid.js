@@ -379,9 +379,9 @@ if (typeof Slick === "undefined") {
             .on("resize.slickgrid", resizeCanvas);
         $viewport
             //.on("click", handleClick)
-            //.on("scroll", handleScroll);
+            .on("scroll", handleScroll);
         $headerScroller
-            .on("scroll", handleHeaderScroll)
+            //.on("scroll", handleHeaderScroll)
             .on("contextmenu", handleHeaderContextMenu)
             .on("click", handleHeaderClick)
             .on("mouseenter", ".slick-header-column", handleHeaderMouseEnter)
