@@ -827,89 +827,109 @@ if (typeof Slick === "undefined") {
       // when there isn't any click actions
       if (columns.find(c => c.sortable)) {
         $headers.on('click.sort', (function (e) {
-            if (columnResizeDragging) return;
-            // temporary workaround for a bug in jQuery 1.7.1 (http://bugs.jquery.com/ticket/11328)
-            e.metaKey = e.metaKey || e.ctrlKey;
+          sortColumn(e);
+        }
+        ));
+      }
+    }
 
-            if ($(e.target).hasClass("slick-resizable-handle")) {
-              return;
+    function sortColumn(e) {
+      if (columnResizeDragging) return;
+      // temporary workaround for a bug in jQuery 1.7.1 (http://bugs.jquery.com/ticket/11328)
+      e.metaKey = e.metaKey || e.ctrlKey;
+
+      if ($(e.target).hasClass("slick-resizable-handle")) {
+        return;
+      }
+
+      var $col;
+      var activeCell;
+      if (e.handleObj.type === 'keydown') {
+        activeCell = getActiveCell();
+        if (activeCell) {
+          $col = $(getHeaderColumn(activeCell.cell)).closest(".slick-header-column");
+        }
+      } else if (e.handleObj.type === 'click') {
+        $col = $(e.target).closest(".slick-header-column");
+      }  
+
+      if (!$col.length) {
+        return;
+      }
+
+      var column = $col.data("column");
+      if (column.sortable) {
+        if (!getEditorLock().commitCurrentEdit()) {
+          return;
+        }
+
+        var sortColumn = null;
+        var i = 0;
+        for (; i < sortColumns.length; i++) {
+          if (sortColumns[i].columnId == column.id) {
+            sortColumn = sortColumns[i];
+            sortColumn.sortAsc = !sortColumn.sortAsc;
+            break;
+          }
+        }
+        var hadSortCol = !!sortColumn;
+
+        if (options.tristateMultiColumnSort) {
+          if (!sortColumn) {
+            sortColumn = { columnId: column.id, sortAsc: column.defaultSortAsc };
+          }
+          if (hadSortCol && sortColumn.sortAsc) {
+            // three state: remove sort rather than go back to ASC
+            sortColumns.splice(i, 1);
+            sortColumn = null;
+          }
+          if (!options.multiColumnSort) { sortColumns = []; }
+          if (sortColumn && (!hadSortCol || !options.multiColumnSort)) {
+            sortColumns.push(sortColumn);
+          }
+        } else {
+          // legacy behaviour
+          if (e.metaKey && options.multiColumnSort) {
+            if (sortColumn) {
+              sortColumns.splice(i, 1);
+            }
+          }
+          else {
+            if ((!e.shiftKey && !e.metaKey) || !options.multiColumnSort) {
+              sortColumns = [];
             }
 
-            var $col = $(e.target).closest(".slick-header-column");
-            if (!$col.length) {
-              return;
+            if (!sortColumn) {
+              sortColumn = { columnId: column.id, sortAsc: column.defaultSortAsc };
+              sortColumns.push(sortColumn);
+            } else if (sortColumns.length == 0) {
+              sortColumns.push(sortColumn);
             }
+          }
+        }
 
-            var column = $col.data("column");
-            if (column.sortable) {
-              if (!getEditorLock().commitCurrentEdit()) {
-                return;
-              }
+        setSortColumns(sortColumns);
 
-              var sortColumn = null;
-              var i = 0;
-              for (; i < sortColumns.length; i++) {
-                if (sortColumns[i].columnId == column.id) {
-                  sortColumn = sortColumns[i];
-                  sortColumn.sortAsc = !sortColumn.sortAsc;
-                  break;
-                }
-              }
-              var hadSortCol = !!sortColumn;
-
-              if (options.tristateMultiColumnSort) {
-                  if (!sortColumn) {
-                    sortColumn = { columnId: column.id, sortAsc: column.defaultSortAsc };
-                  }
-                  if (hadSortCol && sortColumn.sortAsc) {
-                    // three state: remove sort rather than go back to ASC
-                    sortColumns.splice(i, 1);
-                    sortColumn = null;
-                  }
-                  if (!options.multiColumnSort) { sortColumns = []; }
-                  if (sortColumn && (!hadSortCol || !options.multiColumnSort)) {
-                    sortColumns.push(sortColumn);
-                  }
-              } else {
-                  // legacy behaviour
-                  if (e.metaKey && options.multiColumnSort) {
-                    if (sortColumn) {
-                      sortColumns.splice(i, 1);
-                    }
-                  }
-                  else {
-                    if ((!e.shiftKey && !e.metaKey) || !options.multiColumnSort) {
-                      sortColumns = [];
-                    }
-
-                    if (!sortColumn) {
-                      sortColumn = { columnId: column.id, sortAsc: column.defaultSortAsc };
-                      sortColumns.push(sortColumn);
-                    } else if (sortColumns.length == 0) {
-                      sortColumns.push(sortColumn);
-                    }
-                  }
-              }
-
-              setSortColumns(sortColumns);
-
-              if (!options.multiColumnSort) {
-                trigger(self.onSort, {
-                  multiColumnSort: false,
-                  sortCol: (sortColumns.length > 0 ? column : null),
-                  sortAsc: (sortColumns.length > 0 ? sortColumns[0].sortAsc : true),
-                  grid: self}, e);
-              } else {
-                trigger(self.onSort, {
-                  multiColumnSort: true,
-                  sortCols: $.map(sortColumns, function(col) {
-                    return {sortCol: columns[getColumnIndex(col.columnId)], sortAsc: col.sortAsc };
-                  }),
-                  grid: self}, e);
-              }
-            }
-          })
-        );
+        if (!options.multiColumnSort) {
+          trigger(self.onSort, {
+            multiColumnSort: false,
+            sortCol: (sortColumns.length > 0 ? column : null),
+            sortAsc: (sortColumns.length > 0 ? sortColumns[0].sortAsc : true),
+            grid: self
+          }, e);
+        } else {
+          trigger(self.onSort, {
+            multiColumnSort: true,
+            sortCols: $.map(sortColumns, function (col) {
+              return { sortCol: columns[getColumnIndex(col.columnId)], sortAsc: col.sortAsc };
+            }),
+            grid: self
+          }, e);
+        }
+        if(activeCell){
+          setActiveCell(activeCell.row, activeCell.cell)
+        }
+        return true;
       }
     }
 
@@ -2775,6 +2795,8 @@ if (typeof Slick === "undefined") {
               }
             }
             handled = true;
+          } else if (e.which == keyCode.F3) {
+            handled = sortColumn(e);
           }
         } else if (e.which == keyCode.TAB && e.shiftKey && !e.ctrlKey && !e.altKey) {
           handled = navigatePrev();
