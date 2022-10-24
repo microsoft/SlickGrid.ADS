@@ -40,8 +40,7 @@
         RIGHT: 39,
         TAB: 9,
         UP: 38,
-        A: 65,
-        F3: 114
+        A: 65
       },
       "preClickClassName" : "slick-edit-preclick"
     }
