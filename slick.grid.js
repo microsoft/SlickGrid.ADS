@@ -993,7 +993,6 @@ if (typeof Slick === "undefined") {
         }, undefined);
       }
       setActiveCell(activeCell.row, activeCell.cell);
-      return true;
     }
 
     function setupColumnReorder() {
