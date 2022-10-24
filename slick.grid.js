@@ -2844,10 +2844,7 @@ if (typeof Slick === "undefined") {
             handled = navigateDown();
           } else if (e.which == keyCode.TAB) {
             handled = navigateNext();
-          } else if (e.which == keyCode.F3) {
-            handled = sortColumnByActiveCell();
-          }
-           else if (e.which == keyCode.ENTER) {
+          } else if (e.which == keyCode.ENTER) {
             if (options.editable) {
               if (currentEditor) {
                 // adding new row
