@@ -891,8 +891,8 @@ if (typeof Slick === "undefined") {
                   }
               }
 
-              sortColumn = { columnId: column.id, sortAsc: column.defaultSortAsc };
-
+              setSortColumns(sortColumns);
+              
               if (!options.multiColumnSort) {
                 trigger(self.onSort, {
                   multiColumnSort: false,
