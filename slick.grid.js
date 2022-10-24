@@ -892,7 +892,7 @@ if (typeof Slick === "undefined") {
               }
 
               setSortColumns(sortColumns);
-              
+
               if (!options.multiColumnSort) {
                 trigger(self.onSort, {
                   multiColumnSort: false,
