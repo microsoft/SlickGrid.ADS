@@ -2381,6 +2381,17 @@ if (typeof Slick === "undefined") {
           cacheEntry.rowNode.appendChild(node);
           cacheEntry.cellNodesByColumnIdx[columnIdx] = node;
         }
+
+        /**
+         * {{SQL CARBON EDIT}}
+         * sorting the cell nodes inside the row div. This helps us fix the issue of 
+         * screen reader not reading the cell index in the correct order. Issue: https://github.com/microsoft/azuredatastudio/issues/20784
+         */
+        [].slice.call(cacheEntry.rowNode.childNodes).sort(function (a, b) {
+					return a.ariaColIndex - b.ariaColIndex;
+				}).forEach(function (ele) {
+					cacheEntry.rowNode.appendChild(ele);
+				});
       }
     }
 
@@ -2841,6 +2852,9 @@ if (typeof Slick === "undefined") {
             handled = navigateDown();
           } else if (e.which == keyCode.TAB) {
             handled = navigateNext();
+          } else if (e.which == 114) {
+            sortColumnByActiveCell();
+            handled = true;
           } else if (e.which == keyCode.ENTER) {
             if (options.editable) {
               if (currentEditor) {
