@@ -1839,7 +1839,12 @@ if (typeof Slick === "undefined") {
           }
         }
 
-        // Commenting out this block of code to remove cell based virtualization to prevent screen reader issues. 
+        /**
+         * Commenting out this block of code to remove column based virtualization to prevent screen reader issues. 
+         * Now, cells for all columns are rendered for a given row.
+         * Link to the issue: https://github.com/microsoft/azuredatastudio/issues/20784
+         */
+
         // // Do not render cells outside of the viewport.
         // if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
         //   if (columnPosLeft[i] > range.rightPx) {
