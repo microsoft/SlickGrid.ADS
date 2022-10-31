@@ -1839,15 +1839,19 @@ if (typeof Slick === "undefined") {
           }
         }
 
-        // Do not render cells outside of the viewport.
-        if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
-          if (columnPosLeft[i] > range.rightPx) {
-            // All columns to the right are outside the range.
-            break;
-          }
+        // Commenting out this block of code to remove cell based virtualization to prevent screen reader issues. 
+        // // Do not render cells outside of the viewport.
+        // if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
+        //   if (columnPosLeft[i] > range.rightPx) {
+        //     // All columns to the right are outside the range.
+        //     break;
+        //   }
 
-          appendCellHtml(stringArray, row, i, colspan, d);
-        }
+        //   appendCellHtml(stringArray, row, i, colspan, d);
+        // }
+
+        // Rendering all cells for the given row. 
+        appendCellHtml(stringArray, row, i, colspan, d);
 
         if (colspan > 1) {
           i += (colspan - 1);
@@ -2381,17 +2385,6 @@ if (typeof Slick === "undefined") {
           cacheEntry.rowNode.appendChild(node);
           cacheEntry.cellNodesByColumnIdx[columnIdx] = node;
         }
-
-        /**
-         * {{SQL CARBON EDIT}}
-         * sorting the cell nodes inside the row div. This helps us fix the issue of 
-         * screen reader not reading the cell index in the correct order. Issue: https://github.com/microsoft/azuredatastudio/issues/20784
-         */
-        [].slice.call(cacheEntry.rowNode.childNodes).sort(function (a, b) {
-					return a.ariaColIndex - b.ariaColIndex;
-				}).forEach(function (ele) {
-					cacheEntry.rowNode.appendChild(ele);
-				});
       }
     }
 
@@ -2490,10 +2483,11 @@ if (typeof Slick === "undefined") {
       // remove rows no longer in the viewport
       cleanupRows(rendered);
 
-      // add new rows & missing cells in existing rows
-      if (lastRenderedScrollLeft != scrollLeft) {
-        cleanUpAndRenderCells(rendered);
-      }
+      // since all the cells are rendered for the row, we do not need to re-render missing cells on horizontal scroll
+      // // add new rows & missing cells in existing rows
+      // if (lastRenderedScrollLeft != scrollLeft) {
+      //   cleanUpAndRenderCells(rendered);
+      // }
 
       // render missing rows
       renderRows(rendered);
