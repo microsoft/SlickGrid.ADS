@@ -106,7 +106,7 @@ if (typeof Slick === "undefined") {
       minRowBuffer: 3,
       emulatePagingWhenScrolling: true, // when scrolling off bottom of viewport, place new row at top of viewport
       editorCellNavOnLRKeys: false,
-      disableColumnBasedCellVirtualization: false
+      disableColumnBasedCellVirtualization: false //disables column based cell virtualization and fix screen reader issues. https://github.com/microsoft/azuredatastudio/issues/20784
     };
 
     var columnDefaults = {
