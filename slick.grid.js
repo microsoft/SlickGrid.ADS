@@ -105,7 +105,8 @@ if (typeof Slick === "undefined") {
       viewportClass: null,
       minRowBuffer: 3,
       emulatePagingWhenScrolling: true, // when scrolling off bottom of viewport, place new row at top of viewport
-      editorCellNavOnLRKeys: false
+      editorCellNavOnLRKeys: false,
+      disableColumnBasedCellVirtualization: false
     };
 
     var columnDefaults = {
@@ -1839,24 +1840,19 @@ if (typeof Slick === "undefined") {
           }
         }
 
-        /**
-         * Commenting out this block of code to remove column based virtualization to prevent screen reader issues. 
-         * Now, cells for all columns are rendered for a given row.
-         * Link to the issue: https://github.com/microsoft/azuredatastudio/issues/20784
-         */
-
-        // // Do not render cells outside of the viewport.
-        // if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
-        //   if (columnPosLeft[i] > range.rightPx) {
-        //     // All columns to the right are outside the range.
-        //     break;
-        //   }
-
-        //   appendCellHtml(stringArray, row, i, colspan, d);
-        // }
-
-        // Rendering all cells for the given row. 
-        appendCellHtml(stringArray, row, i, colspan, d);
+        if (options.disableColumnBasedCellVirtualization) {
+          // Rendering all cells for the given row. 
+          appendCellHtml(stringArray, row, i, colspan, d);
+        } else {
+          // Do not render cells outside of the viewport.
+          if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
+            if (columnPosLeft[i] > range.rightPx) {
+              // All columns to the right are outside the range.
+              break;
+            }
+            appendCellHtml(stringArray, row, i, colspan, d);
+          }
+        }
 
         if (colspan > 1) {
           i += (colspan - 1);
@@ -2488,11 +2484,12 @@ if (typeof Slick === "undefined") {
       // remove rows no longer in the viewport
       cleanupRows(rendered);
 
-      // since all the cells are rendered for the row, we do not need to re-render missing cells on horizontal scroll
-      // // add new rows & missing cells in existing rows
-      // if (lastRenderedScrollLeft != scrollLeft) {
-      //   cleanUpAndRenderCells(rendered);
-      // }
+      // We are cleaning up cells on horizontal scrolls only when column virtualization is enabled.
+      if(!options.disableColumnBasedCellVirtualization){
+        if (lastRenderedScrollLeft != scrollLeft) {
+          cleanUpAndRenderCells(rendered);
+        }
+      }
 
       // render missing rows
       renderRows(rendered);
