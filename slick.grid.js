@@ -105,7 +105,8 @@ if (typeof Slick === "undefined") {
       viewportClass: null,
       minRowBuffer: 3,
       emulatePagingWhenScrolling: true, // when scrolling off bottom of viewport, place new row at top of viewport
-      editorCellNavOnLRKeys: false
+      editorCellNavOnLRKeys: false,
+      disableColumnBasedCellVirtualization: false //disables column based cell virtualization and fix screen reader issues. https://github.com/microsoft/azuredatastudio/issues/20784
     };
 
     var columnDefaults = {
@@ -1839,14 +1840,18 @@ if (typeof Slick === "undefined") {
           }
         }
 
-        // Do not render cells outside of the viewport.
-        if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
-          if (columnPosLeft[i] > range.rightPx) {
-            // All columns to the right are outside the range.
-            break;
-          }
-
+        if (options.disableColumnBasedCellVirtualization) {
+          // Rendering all cells for the given row. 
           appendCellHtml(stringArray, row, i, colspan, d);
+        } else {
+          // Do not render cells outside of the viewport.
+          if (columnPosRight[Math.min(ii - 1, i + colspan - 1)] > range.leftPx) {
+            if (columnPosLeft[i] > range.rightPx) {
+              // All columns to the right are outside the range.
+              break;
+            }
+            appendCellHtml(stringArray, row, i, colspan, d);
+          }
         }
 
         if (colspan > 1) {
@@ -2479,9 +2484,11 @@ if (typeof Slick === "undefined") {
       // remove rows no longer in the viewport
       cleanupRows(rendered);
 
-      // add new rows & missing cells in existing rows
-      if (lastRenderedScrollLeft != scrollLeft) {
-        cleanUpAndRenderCells(rendered);
+      // We are cleaning up cells on horizontal scrolls only when column virtualization is enabled.
+      if(!options.disableColumnBasedCellVirtualization){
+        if (lastRenderedScrollLeft != scrollLeft) {
+          cleanUpAndRenderCells(rendered);
+        }
       }
 
       // render missing rows
