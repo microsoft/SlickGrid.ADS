@@ -3439,6 +3439,7 @@ if (typeof Slick === "undefined") {
         if (prevCell !== null) {
           setActiveCellInternal(getCellNode(row, prevCell));
           activePosX = prevActivePosX;
+          trigger(self.onAfterKeyboardNavigation, { grid: self });
         } else {
           resetActiveCell();
         }
@@ -3482,6 +3483,7 @@ if (typeof Slick === "undefined") {
           if (prevCell !== null) {
              setActiveCellInternal(getCellNode(row, prevCell));
              activePosX = prevActivePosX;
+             trigger(self.onAfterKeyboardNavigation, { grid: self });
           } else {
              resetActiveCell();
           }
@@ -3795,6 +3797,7 @@ if (typeof Slick === "undefined") {
         scrollCellIntoView(pos.row, pos.cell, !isAddNewRow && options.emulatePagingWhenScrolling);
         setActiveCellInternal(getCellNode(pos.row, pos.cell));
         activePosX = pos.posX;
+        trigger(self.onAfterKeyboardNavigation, { grid: self });
         return true;
       } else {
         return false;
@@ -4068,6 +4071,7 @@ if (typeof Slick === "undefined") {
       "onSelectedRowsChanged": new Slick.Event(),
       "onCellCssStylesChanged": new Slick.Event(),
       "onRendered": new Slick.Event(),
+      "onAfterKeyboardNavigation": new Slick.Event(),
 
       // Methods
       "registerPlugin": registerPlugin,
