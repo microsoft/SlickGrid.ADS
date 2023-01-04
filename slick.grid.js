@@ -159,9 +159,6 @@ if (typeof Slick === "undefined") {
     var headerColumnWidthDiff = 0, headerColumnHeightDiff = 0, // border+padding
         cellWidthDiff = 0, cellHeightDiff = 0, jQueryNewWidthBehaviour = false;
     var absoluteColumnMinWidth;
-
-    var tabbingDirection = 1;
-    var activePosX;
     var activeRow, activeCell;
     var activeCellNode = null;
     var currentEditor = null;
@@ -3121,7 +3118,7 @@ if (typeof Slick === "undefined") {
 
       if (activeCellNode != null) {
         activeRow = getRowFromNode(activeCellNode.parentNode);
-        activeCell = activePosX = getCellFromNode(activeCellNode);
+        activeCell = getCellFromNode(activeCellNode);
 
         $(activeCellNode).attr('tabindex', '0');
 
@@ -3428,8 +3425,7 @@ if (typeof Slick === "undefined") {
         }
 
         var cell = 0, prevCell = null;
-        var prevActivePosX = activePosX;
-        while (cell <= activePosX) {
+        while (cell <= activeCell) {
           if (canCellBeActive(row, cell)) {
             prevCell = cell;
           }
@@ -3438,7 +3434,6 @@ if (typeof Slick === "undefined") {
 
         if (prevCell !== null) {
           setActiveCellInternal(getCellNode(row, prevCell));
-          activePosX = prevActivePosX;
           trigger(self.onAfterKeyboardNavigation, { grid: self });
         } else {
           resetActiveCell();
@@ -3472,8 +3467,7 @@ if (typeof Slick === "undefined") {
        scrollCellIntoView(row, 0, true);
        if (options.enableCellNavigation && activeRow != null) {
           var cell = 0, prevCell = null;
-          var prevActivePosX = activePosX;
-          while (cell <= activePosX) {
+          while (cell <= activeCell) {
              if (canCellBeActive(row, cell)) {
                 prevCell = cell;
              }
@@ -3482,7 +3476,6 @@ if (typeof Slick === "undefined") {
 
           if (prevCell !== null) {
              setActiveCellInternal(getCellNode(row, prevCell));
-             activePosX = prevActivePosX;
              trigger(self.onAfterKeyboardNavigation, { grid: self });
           } else {
              resetActiveCell();
@@ -3531,27 +3524,27 @@ if (typeof Slick === "undefined") {
       return lastFocusableCell;
     }
 
-    function gotoRight(row, cell, posX) {
+    function gotoRight(row, cell) {
       if (cell >= columns.length) {
         return null;
       }
 
+      var newCell = cell;
       do {
-        cell += getColspan(row, cell);
+        newCell += getColspan(row, newCell);
       }
-      while (cell < columns.length && !canCellBeActive(row, cell));
+      while (newCell < columns.length && !canCellBeActive(row, newCell));
 
-      if (cell < columns.length) {
+      if (newCell < columns.length) {
         return {
           "row": row,
-          "cell": cell,
-          "posX": cell
+          "cell": newCell
         };
       }
       return null;
     }
 
-    function gotoLeft(row, cell, posX) {
+    function gotoLeft(row, cell) {
       if (cell <= 0) {
         return null;
       }
@@ -3563,12 +3556,11 @@ if (typeof Slick === "undefined") {
 
       var prev = {
         "row": row,
-        "cell": firstFocusableCell,
-        "posX": firstFocusableCell
+        "cell": firstFocusableCell
       };
       var pos;
       while (true) {
-        pos = gotoRight(prev.row, prev.cell, prev.posX);
+        pos = gotoRight(prev.row, prev.cell);
         if (!pos) {
           return null;
         }
@@ -3579,66 +3571,63 @@ if (typeof Slick === "undefined") {
       }
     }
 
-    function gotoDown(row, cell, posX) {
-      var prevCell;
+    function gotoDown(row, cell) {
+      var prevCell, nextCell;
       var dataLengthIncludingAddNew = getDataLengthIncludingAddNew();
       while (true) {
         if (++row >= dataLengthIncludingAddNew) {
           return null;
         }
 
-        prevCell = cell = 0;
-        while (cell <= posX) {
-          prevCell = cell;
-          cell += getColspan(row, cell);
+        prevCell = nextCell = 0;
+        while (nextCell <= cell) {
+          prevCell = nextCell;
+          nextCell += getColspan(row, nextCell);
         }
 
         if (canCellBeActive(row, prevCell)) {
           return {
             "row": row,
-            "cell": prevCell,
-            "posX": posX
+            "cell": prevCell
           };
         }
       }
     }
 
-    function gotoUp(row, cell, posX) {
-      var prevCell;
+    function gotoUp(row, cell) {
+      var prevCell, nextCell;
       while (true) {
         if (--row < 0) {
           return null;
         }
 
-        prevCell = cell = 0;
-        while (cell <= posX) {
-          prevCell = cell;
-          cell += getColspan(row, cell);
+        prevCell = nextCell = 0;
+        while (nextCell <= cell) {
+          prevCell = nextCell;
+          nextCell += getColspan(row, nextCell);
         }
 
         if (canCellBeActive(row, prevCell)) {
           return {
             "row": row,
-            "cell": prevCell,
-            "posX": posX
+            "cell": prevCell
           };
         }
       }
     }
 
-    function gotoNext(row, cell, posX) {
+    function gotoNext(row, cell) {
       if (row == null && cell == null) {
-        row = cell = posX = 0;
+        row = cell = 0;
         if (canCellBeActive(row, cell)) {
           return {
             "row": row,
-            "cell": cell,
-            "posX": cell
+            "cell": cell
           };
         }
       }
 
-      var pos = gotoRight(row, cell, posX);
+      var pos = gotoRight(row, cell);
       if (pos) {
         return pos;
       }
@@ -3651,23 +3640,21 @@ if (typeof Slick === "undefined") {
         if (firstFocusableCell !== null) {
           return {
             "row": row,
-            "cell": firstFocusableCell,
-            "posX": firstFocusableCell
+            "cell": firstFocusableCell
           };
         }
       }
       return null;
     }
 
-    function gotoPrev(row, cell, posX) {
+    function gotoPrev(row, cell) {
       if (row == null && cell == null) {
         row = getDataLengthIncludingAddNew() - 1;
-        cell = posX = columns.length - 1;
+        cell = columns.length - 1;
         if (canCellBeActive(row, cell)) {
           return {
             "row": row,
-            "cell": cell,
-            "posX": cell
+            "cell": cell
           };
         }
       }
@@ -3675,7 +3662,7 @@ if (typeof Slick === "undefined") {
       var pos;
       var lastSelectableCell;
       while (!pos) {
-        pos = gotoLeft(row, cell, posX);
+        pos = gotoLeft(row, cell);
         if (pos) {
           break;
         }
@@ -3688,33 +3675,30 @@ if (typeof Slick === "undefined") {
         if (lastSelectableCell !== null) {
           pos = {
             "row": row,
-            "cell": lastSelectableCell,
-            "posX": lastSelectableCell
+            "cell": lastSelectableCell
           };
         }
       }
       return pos;
     }
 
-    function gotoRowStart(row, cell, posX) {
+    function gotoRowStart(row, cell) {
        var newCell = findFirstFocusableCell(row);
        if (newCell === null) return null;
 
        return {
           "row": row,
-          "cell": newCell,
-          "posX": posX
+          "cell": newCell
        };
     }
 
-    function gotoRowEnd(row, cell, posX) {
+    function gotoRowEnd(row, cell) {
        var newCell = findLastFocusableCell(row);
        if (newCell === null) return null;
 
        return {
           "row": row,
-          "cell": newCell,
-          "posX": posX
+          "cell": newCell
        };
     }
 
@@ -3768,18 +3752,6 @@ if (typeof Slick === "undefined") {
       }
       setFocus();
 
-      var tabbingDirections = {
-        "up": -1,
-        "down": 1,
-        "left": -1,
-        "right": 1,
-        "prev": -1,
-        "next": 1,
-        "home": -1,
-        "end": 1
-      };
-      tabbingDirection = tabbingDirections[dir];
-
       var stepFunctions = {
         "up": gotoUp,
         "down": gotoDown,
@@ -3791,12 +3763,11 @@ if (typeof Slick === "undefined") {
         "end": gotoRowEnd
       };
       var stepFn = stepFunctions[dir];
-      var pos = stepFn(activeRow, activeCell, activePosX);
+      var pos = stepFn(activeRow, activeCell);
       if (pos) {
         var isAddNewRow = (pos.row == getDataLength());
         scrollCellIntoView(pos.row, pos.cell, !isAddNewRow && options.emulatePagingWhenScrolling);
         setActiveCellInternal(getCellNode(pos.row, pos.cell));
-        activePosX = pos.posX;
         trigger(self.onAfterKeyboardNavigation, { grid: self });
         return true;
       } else {
