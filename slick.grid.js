@@ -106,7 +106,8 @@ if (typeof Slick === "undefined") {
       minRowBuffer: 3,
       emulatePagingWhenScrolling: true, // when scrolling off bottom of viewport, place new row at top of viewport
       editorCellNavOnLRKeys: false,
-      disableColumnBasedCellVirtualization: false //disables column based cell virtualization and fix screen reader issues. https://github.com/microsoft/azuredatastudio/issues/20784
+      disableColumnBasedCellVirtualization: false, //disables column based cell virtualization and fix screen reader issues. https://github.com/microsoft/azuredatastudio/issues/20784
+      enableInGridTabNavigation: true // Whether tab/shift+tab can be used to navigate within the grid, if disabled, the focus will move out of the grid.
     };
 
     var columnDefaults = {
@@ -2843,7 +2844,7 @@ if (typeof Slick === "undefined") {
             handled = navigateUp();
           } else if (e.which == keyCode.DOWN) {
             handled = navigateDown();
-          } else if (e.which == keyCode.TAB) {
+          } else if (options.enableInGridTabNavigation && e.which == keyCode.TAB) {
             handled = navigateNext();
           } else if (e.which == keyCode.ENTER) {
             if (options.editable) {
@@ -2862,7 +2863,7 @@ if (typeof Slick === "undefined") {
             }
             handled = true;
           }
-        } else if (e.which == keyCode.TAB && e.shiftKey && !e.ctrlKey && !e.altKey) {
+        } else if (options.enableInGridTabNavigation && e.which == keyCode.TAB && e.shiftKey && !e.ctrlKey && !e.altKey) {
           handled = navigatePrev();
         }
       }
