@@ -3974,6 +3974,10 @@ if (typeof Slick === "undefined") {
       selectionModel.setSelectedRanges(rowsToRanges(rows));
     }
 
+    function getPlugins() {
+      return plugins;
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Debug
@@ -4070,7 +4074,7 @@ if (typeof Slick === "undefined") {
       "setSelectedRows": setSelectedRows,
       "getContainerNode": getContainerNode,
       "updatePagingStatusFromView": updatePagingStatusFromView,
-
+      "getPlugins": getPlugins,
       "render": render,
       "invalidate": invalidate,
       "invalidateRow": invalidateRow,
