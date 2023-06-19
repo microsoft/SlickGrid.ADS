@@ -1867,7 +1867,7 @@ if (typeof Slick === "undefined") {
           case '>': return '&gt;';
           case '&': return '&amp;';
           case '"': return '&quot;';
-          case '\'': return '&#39';
+          case '\'': return '&#39;';
           default: return match;
         }
       });
