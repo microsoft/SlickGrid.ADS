@@ -1860,6 +1860,22 @@ if (typeof Slick === "undefined") {
       stringArray.push("</div>");
     }
 
+    // Function copied from https://github.com/microsoft/azuredatastudio/blob/main/src/sql/base/common/strings.ts#L10
+    // Used to prevent execution of HTML in vulnerable areas such as aria-label.
+    function htmlEscape(inputString) {
+      inputString = inputString.replace(/[<|>|&|"|\']/g, function (match) {
+        switch (match) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '"': return '&quot;';
+          case '\'': return '&#39;';
+          default: return match;
+        }
+      });
+      return inputString;
+    }
+
     function appendCellHtml(stringArray, row, cell, colspan, item) {
       // stringArray: stringBuilder containing the HTML parts
       // row, cell: row and column index
@@ -1894,9 +1910,9 @@ if (typeof Slick === "undefined") {
       var ariaLabel = '';
       if (value) {
         if (typeof value === 'string') {
-          ariaLabel = `aria-label="${value}"`;
+          ariaLabel = `aria-label="${htmlEscape(value)}"`;
         } else if (value.ariaLabel) {
-          ariaLabel = `aria-label="${value.ariaLabel}"`;
+          ariaLabel = `aria-label="${htmlEscape(value.ariaLabel)}"`;
         }
       }
 
