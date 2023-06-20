@@ -79,6 +79,11 @@
     equal(grid.getData(), data);
   });
 
+  test("HTML escape should escape HTML strings", function () {
+      var testString = `<p>entry value: &entity; stringValue1="test" stringValue2='test'</p>`;
+      equal(grid.htmlEscape(testString), "&lt;p&gt;entry value: &amp;entity; stringValue1=&quot;test&quot; stringValue2=&#39;test&#39;&lt;/p&gt;");
+  });
+
   module("scrollColumnIntoView,", {
     setup: setupGrid,
     teardown: teardownGrid
