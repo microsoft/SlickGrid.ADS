@@ -1863,7 +1863,7 @@ if (typeof Slick === "undefined") {
     // Function copied from https://github.com/microsoft/azuredatastudio/blob/main/src/sql/base/common/strings.ts#L10
     // Used to prevent execution of HTML in vulnerable areas such as aria-label.
     function htmlEscape(inputString) {
-      inputString = inputString.replace(/[<|>|&|"|\']/g, function (match) {
+      inputString = `${inputString}`.replace(/[<|>|&|"|\']/g, function (match) {
         switch (match) {
           case '<': return '&lt;';
           case '>': return '&gt;';
