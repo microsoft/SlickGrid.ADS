@@ -2217,6 +2217,7 @@ if (typeof Slick === "undefined") {
         autosizeColumns();
       }
       updateCanvasWidth(false);
+      $container.attr('aria-rowcount', dataLength);
     }
 
     function getVisibleRange(viewportTop, viewportLeft) {
