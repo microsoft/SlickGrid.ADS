@@ -307,7 +307,7 @@ if (typeof Slick === "undefined") {
         $headerRowScroller.hide();
       }
 
-      $viewport = $("<div role='presentation' class='slick-viewport' style='width:100%;overflow:auto;outline:0;position:relative;;'>").appendTo($container);
+      $viewport = $("<div role='presentation' class='slick-viewport' style='width:auto;overflow:auto;outline:0;position:absolute;'>").appendTo($container);
 
       $focusAnchor = $("<div tabIndex='0' hideFocus style='position:fixed;width:0;height:0;top:0;left:0;outline:0;'></div>").appendTo($viewport);
 
