@@ -307,6 +307,9 @@ if (typeof Slick === "undefined") {
         $headerRowScroller.hide();
       }
 
+      // To make sure the scrolling works in multiple result sets, we need to ensure the width of viewport is only limited to the width of the table/resultset.
+      // To set this auto-width, use width:auto with an position:absolute, which will adjust width of viewport according to it's contents.
+      // This leaves the parent scrollable container unblocked so it can pick up the scroll event from the mouse.
       $viewport = $("<div role='presentation' class='slick-viewport' style='width:auto;overflow:auto;outline:0;position:absolute;'>").appendTo($container);
 
       $focusAnchor = $("<div tabIndex='0' hideFocus style='position:fixed;width:0;height:0;top:0;left:0;outline:0;'></div>").appendTo($viewport);
