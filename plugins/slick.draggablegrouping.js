@@ -227,7 +227,9 @@
           if (e.id == columnid) {
             if (e.grouping != null && !$.isEmptyObject(e.grouping)) {
               var entry = $("<div id='" + _gridUid + e.id + "_entry' data-id='" + e.id + "' class='slick-dropped-grouping'>");
-              var groupText = $("<div style='display: inline-flex'>" + column.text() + "</div>")
+              const santizedGroupTextHtml = filterXSS(`<div>${column.text()}</div>`);
+              var groupText = $(santizedGroupTextHtml);
+              groupText.css('display', 'inline-flex');
               groupText.appendTo(entry);
               var groupRemoveIcon = $("<div class='slick-groupby-remove'>&nbsp;</div>")
               if(options.deleteIconCssClass) groupRemoveIcon.addClass(options.deleteIconCssClass);
